@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dayanna Tamez</title>
+</head>
+<body>
+    <style>
+      
+        *{
+            box-sizing: border-box;
+        }
+        :root{
+            --primary-color: rgb(255, 249, 160);
+            --secundary-color: rgb(129, 224, 129);
+            --terceary-color: rgb(240, 189, 22);
+            --color-cuarto: rgb(204, 67, 49);
+            --color-quinto: rgb(8, 117, 219);
+        }
+        body{
+            background-color: var(--primary-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+        }
+        header{
+            padding: 15px;
+            display: flex;
+            justify-content: flex-end;
+            background-color: var(--color-cuarto);
+        }
+        .search{
+            background-color: var(--primary-color);
+            border: 5px solid var(--terceary-color);
+            border-radius: 50px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 15px;
+            padding: 10px 16px;
+            color: var(--terceary-color);
+        }
+        .search::placeholder{
+            color: var(--color-quinto);
+        }
+        .search:focus{
+            outline: none;
+            background-color: var(--color-cuarto);
+        }
+        main{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .personaje{
+            width: 400px;
+            margin: 15px;
+            background-color: var(--color-cuarto);
+            box-shadow: 10 15px 1px var(--secundary-color);
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .personaje img{
+            width: 80%;
+            height: 400px;
+            object-fit: contain;
+
+        }
+        .personaje-info{
+            color: var(--color-quinto);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 0.8px 15px 15px;
+            letter-spacing: 5px;
+        }
+        .personaje-info h3{
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        .personaje-info h1{
+            color: var(--terceary-color);
+            margin-top: 0;
+        }
+     
+        .overview {
+            background-color: var(--secundary-color);
+            padding: 15px;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            max-height: 100%;
+            transform: translateY(101%);
+            overflow-y: auto;
+            transition: transform 1s ease-in;
+        }
+        .personaje:hover .overview {
+            transform: translateY(0);
+        }
+    </style>
+
+    
+<header>
+    <img src="images.jpg" alt="logo" style="width: 100px; height: 50px;">
+    <form id="form">
+        <input type="text" id="search" class="search" placeholder="Busca tu personaje">
+    </form>
+</header>
+
+
+<main id="main"></main>
+
+
+<script>
+    const API_URL = 'https://dragonball-api.com/api/characters';
+
+
+    const main = document.getElementById('main');
+    const form = document.getElementById('form');
+    const search = document.getElementById('search');
+
+
+    let allCharacters = [];
+
+
+    getcharacters(API_URL);
+
+
+    async function getcharacters(url) {
+        const res = await fetch(url);
+        const data = await res.json();
+        allCharacters = data.items;
+        showCharacters(allCharacters);
+    }
+
+
+    function showCharacters(characters) {
+        main.innerHTML = '';
+
+
+        characters.forEach((char) => {
+            const { id, name, image, ki, maxKi, race, gender, description } = char;
+            const charElement = document.createElement('div');
+            charElement.classList.add('personaje');
+            charElement.innerHTML = `
+                <img src="${image}" alt="${name}">
+                <div class="personaje-info">
+                    <h1>${id}</h1>
+                    <h3>${name}</h3>
+                    <br>
+                    ${race}
+                </div>
+                <div class="overview">
+                    <h3>Overview</h3>
+                    <p><strong>Ki:</strong> ${ki}</p>
+                    <p><strong>Max ki:</strong> ${maxKi}</p>
+                    ${description}
+                </div>
+            `;
+            main.appendChild(charElement);
+        });
+    }
+
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const searchTerm = search.value.toLowerCase();
+        if (searchTerm && searchTerm !== '') {
+            const filtered = allCharacters.filter(c => c.name.toLowerCase().includes(searchTerm));
+            showCharacters(filtered);
+            search.value = '';
+        } else {
+            showCharacters(allCharacters);
+        }
+    });
+</script>
+</body>
+</html>
